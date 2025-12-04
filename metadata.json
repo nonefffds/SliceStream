@@ -1,0 +1,5 @@
+{
+  "name": "SliceStream - Image Stitch & Slice",
+  "description": "A professional tool to stitch multiple images vertically, visualize dimensions, and slice them into precise segments for export.",
+  "requestFramePermissions": []
+}
