@@ -1,3 +1,10 @@
+export interface CropSettings {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
 export interface SourceImage {
   id: string;
   file: File;
@@ -5,6 +12,7 @@ export interface SourceImage {
   width: number;
   height: number;
   name: string;
+  crop: CropSettings;
 }
 
 export enum SliceMode {

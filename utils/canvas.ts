@@ -12,11 +12,58 @@ export const loadImage = (file: File): Promise<SourceImage> => {
         width: img.width,
         height: img.height,
         name: file.name.split('.')[0],
+        crop: { top: 0, bottom: 0, left: 0, right: 0 },
       });
     };
     img.onerror = reject;
     img.src = url;
   });
+};
+
+/**
+ * Creates a new Canvas/Image with crop/pad applied.
+ * Positive values remove pixels. Negative values add white pixels.
+ */
+const getProcessedImage = async (img: SourceImage): Promise<{ cvs: HTMLCanvasElement; width: number; height: number }> => {
+  const domImg = new Image();
+  domImg.src = img.url;
+  await domImg.decode();
+
+  const { top, bottom, left, right } = img.crop;
+
+  // Original dimensions
+  const ow = img.width;
+  const oh = img.height;
+
+  // New dimensions
+  // width = original - left_cut - right_cut
+  // If left is -10 (padding), we add 10px. 
+  // Formula: newW = ow - left - right
+  const newWidth = ow - left - right;
+  const newHeight = oh - top - bottom;
+
+  if (newWidth <= 0 || newHeight <= 0) {
+     throw new Error(`Invalid crop dimensions for image ${img.name}`);
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Context error');
+
+  // Fill white background (for padding)
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, newWidth, newHeight);
+
+  // Draw image
+  // The source image is always drawn starting at (-left, -top) relative to the new canvas origin.
+  // Example: 
+  // 1. Crop 10px left (left=10). We draw at x = -10. Result: first 10px hidden.
+  // 2. Pad 10px left (left=-10). We draw at x = 10. Result: 10px white bar on left.
+  ctx.drawImage(domImg, -left, -top);
+
+  return { cvs: canvas, width: newWidth, height: newHeight };
 };
 
 export const stitchImages = async (
@@ -25,37 +72,37 @@ export const stitchImages = async (
 ): Promise<{ blob: Blob; width: number; height: number; url: string } | null> => {
   if (images.length === 0) return null;
 
-  // 1. Determine common width
-  // If targetWidth is provided and valid (>0), use it. Otherwise find max width.
-  const maxWidth = (targetWidth && targetWidth > 0) 
-    ? targetWidth 
-    : Math.max(...images.map((img) => img.width));
+  // 1. Process all images first to get their "effective" dimensions after crop/pad
+  const processedImages = [];
+  for (const img of images) {
+    processedImages.push(await getProcessedImage(img));
+  }
 
-  // 2. Calculate total height
-  // Scale every image to match maxWidth
-  const scalingFactors = images.map((img) => maxWidth / img.width);
-  const scaledHeights = images.map((img, i) => Math.round(img.height * scalingFactors[i]));
+  // 2. Determine common width based on processed images
+  const maxProcessedWidth = Math.max(...processedImages.map(p => p.width));
+  const finalTargetWidth = (targetWidth && targetWidth > 0) ? targetWidth : maxProcessedWidth;
+
+  // 3. Calculate scaling and total height
+  const scalingFactors = processedImages.map(p => finalTargetWidth / p.width);
+  const scaledHeights = processedImages.map((p, i) => Math.round(p.height * scalingFactors[i]));
   const totalHeight = scaledHeights.reduce((acc, h) => acc + h, 0);
 
-  // 3. Create Canvas
+  // 4. Create Main Canvas
   const canvas = document.createElement('canvas');
-  canvas.width = maxWidth;
+  canvas.width = finalTargetWidth;
   canvas.height = totalHeight;
   const ctx = canvas.getContext('2d');
 
   if (!ctx) throw new Error('Could not get canvas context');
 
-  // 4. Draw images
+  // 5. Draw processed images
   let currentY = 0;
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i];
-    const domImg = new Image();
-    domImg.src = img.url;
-    await domImg.decode(); // Ensure loaded
-    
+  for (let i = 0; i < processedImages.length; i++) {
+    const pImg = processedImages[i];
     const h = scaledHeights[i];
-    // Draw scaled to maxWidth
-    ctx.drawImage(domImg, 0, currentY, maxWidth, h);
+    
+    // Draw the processed canvas scaled to target width
+    ctx.drawImage(pImg.cvs, 0, currentY, finalTargetWidth, h);
     currentY += h;
   }
 
@@ -64,7 +111,7 @@ export const stitchImages = async (
       if (blob) {
         resolve({
           blob,
-          width: maxWidth,
+          width: finalTargetWidth,
           height: totalHeight,
           url: URL.createObjectURL(blob),
         });

@@ -15,7 +15,8 @@ import {
   Info,
   X,
   Check,
-  ChevronDown
+  ChevronDown,
+  Crop
 } from 'lucide-react';
 
 export const Icons = {
@@ -34,5 +35,6 @@ export const Icons = {
   Info,
   X,
   Check,
-  ChevronDown
+  ChevronDown,
+  Crop
 };

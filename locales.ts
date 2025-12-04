@@ -20,6 +20,7 @@ export const translations = {
     prefix: "Filename Pattern",
     patternHelp: "Format Guide",
     format: "Format",
+    quality: "Quality",
     generate: "Generate Slices",
     downloadAll: "Download All",
     tabPreview: "Stitched Preview",
@@ -32,20 +33,26 @@ export const translations = {
     processing: "Processing...",
     download: "Download",
     dragDrop: "Drag & Drop",
-    // Presets
     presets: "Presets",
     savePreset: "Save Preset",
     presetName: "Preset Name...",
     noPresets: "No saved presets",
     load: "Load",
     delete: "Delete",
-    // Help
     helpTitle: "Filename Pattern Guide",
     helpDesc: "Use these tags to customize your output filenames:",
     tagDate: "Current date (YYMMDD)",
     tagNo: "Slice index (1, 2, 3...)",
     example: "Example",
-    close: "Close"
+    close: "Close",
+    // Crop/Pad
+    crop: "Crop / Pad",
+    cropHelp: "Pos: Crop, Neg: Pad (White)",
+    top: "Top",
+    bottom: "Bottom",
+    left: "Left",
+    right: "Right",
+    pixels: "px",
   },
   zh: {
     title: "SliceStream",
@@ -66,6 +73,7 @@ export const translations = {
     prefix: "文件名格式",
     patternHelp: "格式指南",
     format: "格式",
+    quality: "图片质量",
     generate: "生成切片",
     downloadAll: "全部下载",
     tabPreview: "拼接预览",
@@ -78,20 +86,26 @@ export const translations = {
     processing: "处理中...",
     download: "下载",
     dragDrop: "拖拽上传",
-    // Presets
     presets: "预设",
     savePreset: "保存预设",
     presetName: "预设名称...",
     noPresets: "暂无预设",
     load: "加载",
     delete: "删除",
-    // Help
     helpTitle: "文件名格式指南",
     helpDesc: "使用以下标签自定义输出文件名：",
     tagDate: "当前日期 (YYMMDD)",
     tagNo: "切片序号 (1, 2, 3...)",
     example: "示例",
-    close: "关闭"
+    close: "关闭",
+    // Crop/Pad
+    crop: "裁切 / 留白",
+    cropHelp: "正数裁切，负数留白(白色)",
+    top: "上",
+    bottom: "下",
+    left: "左",
+    right: "右",
+    pixels: "像素",
   },
   ja: {
     title: "SliceStream",
@@ -112,6 +126,7 @@ export const translations = {
     prefix: "ファイル名形式",
     patternHelp: "形式ガイド",
     format: "フォーマット",
+    quality: "画質",
     generate: "スライス生成",
     downloadAll: "すべて保存",
     tabPreview: "結合プレビュー",
@@ -124,19 +139,25 @@ export const translations = {
     processing: "処理中...",
     download: "保存",
     dragDrop: "ドラッグ＆ドロップ",
-    // Presets
     presets: "プリセット",
     savePreset: "プリセット保存",
     presetName: "プリセット名...",
     noPresets: "プリセットなし",
     load: "読込",
     delete: "削除",
-    // Help
     helpTitle: "ファイル名形式ガイド",
     helpDesc: "以下のタグを使用してファイル名をカスタマイズできます：",
     tagDate: "現在の日付 (YYMMDD)",
     tagNo: "スライス番号 (1, 2, 3...)",
     example: "例",
-    close: "閉じる"
+    close: "閉じる",
+    // Crop/Pad
+    crop: "クロップ / 余白",
+    cropHelp: "正: 切取, 負: 余白(白)",
+    top: "上",
+    bottom: "下",
+    left: "左",
+    right: "右",
+    pixels: "px",
   }
 };

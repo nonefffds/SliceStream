@@ -120,6 +120,12 @@ function App() {
     });
   };
 
+  const handleUpdateCrop = (id: string, crop: SourceImage['crop']) => {
+    setImages(prev => prev.map(img => 
+      img.id === id ? { ...img, crop } : img
+    ));
+  };
+
   const handleSlice = async () => {
     if (!stitchedImage) return;
     setIsProcessing(true);
@@ -193,7 +199,18 @@ function App() {
               images={images} 
               onRemove={handleRemove} 
               onMove={handleMove} 
-              texts={{ sourceImages: t.sourceImages, dimensions: t.dimensions }}
+              onUpdateCrop={handleUpdateCrop}
+              texts={{ 
+                sourceImages: t.sourceImages, 
+                dimensions: t.dimensions,
+                crop: t.crop,
+                cropHelp: t.cropHelp,
+                top: t.top,
+                bottom: t.bottom,
+                left: t.left,
+                right: t.right,
+                pixels: t.pixels
+              }}
             />
           </div>
 
@@ -324,7 +341,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Filename & Format */}
+              {/* Filename & Format & Quality */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
                    <div className="flex items-center justify-between mb-1.5">
@@ -361,6 +378,25 @@ function App() {
                     <option value="png">PNG</option>
                   </select>
                 </div>
+
+                {/* Quality Control (Only for JPEG) */}
+                {settings.format === 'jpeg' && (
+                  <div className="col-span-2">
+                    <div className="flex items-center justify-between mb-1.5">
+                       <label className="block text-xs font-medium text-slate-400">{t.quality}</label>
+                       <span className="text-xs font-mono text-primary">{Math.round(settings.quality * 100)}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0.1" 
+                      max="1.0" 
+                      step="0.05"
+                      value={settings.quality}
+                      onChange={(e) => setSettings(s => ({ ...s, quality: parseFloat(e.target.value) }))}
+                      className="w-full accent-primary h-2 bg-slate-900 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                )}
               </div>
               
               {/* Detailed Help Box */}
